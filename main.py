@@ -15,10 +15,6 @@ class NeuralNetwork:
 
         self.wih = np.array(initialweights["wih"])
         self.who = np.array(initialweights["who"])
-        #self.wih.split(" ")
-        #self.wih.astype(int)
-
-        #print(np.dtype(self.wih))
 
         self.lr = lr
         self.activation_function = lambda x: scipy.special.expit(x)
@@ -97,8 +93,7 @@ def create_NN():
             targets[int(all_values[0])] = 0.99
             target += [targets]
 
-        neuralNetwork.train_multiple_epochs(input, target, 100)
-
+        neuralNetwork.train_multiple_epochs(input, target, 200)
     except FileExistsError:
         test_file = open("material/mnist_test_10.csv", 'r')
         test_list = test_file.readlines()
@@ -112,7 +107,8 @@ def create_NN():
             t += [all_values[0]]
 
         for i in range(0, len(input)):
-            print("Neural Network prediction", input[i].tolist().index(np.array(neuralNetwork.query(input[i]).max()))+1, "target:", t[i])
+            output = neuralNetwork.query(input[i]).T[0].tolist()
+            print("Neural Network prediction", output.index(max(output))+1, "target:", t[i])
 
 
 
