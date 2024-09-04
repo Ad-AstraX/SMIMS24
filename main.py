@@ -11,10 +11,8 @@ class NeuralNetwork:
         self.hnodes = hiddennodes
         self.onodes = outputnodes
 
-        print (initialweights["wih"])
-        print (initialweights["who"])
-        self.wih = np.array(initialweights["rings"])
-        self.who = numpy.fromstring(initialweights["who"])
+        self.wih = np.array(initialweights["wih"])
+        self.who = np.array(initialweights["who"])
 
         self.lr = learningrate
         self.activation_function = lambda x: scipy.special.expit(x)
@@ -37,7 +35,7 @@ class NeuralNetwork:
 
     def train_multiple_epochs(self, input, target, epochs):
         for e in range(epochs):
-            self.train(input[e], target[e])
+            self.train(input, target)
 
         with open("weights.json", 'w') as file:
             weights = {"wih" : self.wih, "who" : self.who}
@@ -69,7 +67,7 @@ def create_NN():
 
         neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 2, weights)
 
-        data_file = open("mnist_train_100.csv", 'r')
+        data_file = open("material/mnist_train_100.csv", 'r')
         data_list = data_file.readlines()
         data_file.close()
 
