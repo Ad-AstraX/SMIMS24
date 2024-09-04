@@ -6,21 +6,24 @@ import json
 
 
 class NeuralNetwork:
-    def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate, initialweights):
-        self.inodes = inputnodes
-        self.hnodes = hiddennodes
-        self.onodes = outputnodes
+    def __init__(self, inodes, hnodes, onodes, lr, initialweights):
+        self.inodes = inodes
+        self.hnodes = hnodes
+        self.onodes = onodes
 
         self.wih = np.array(initialweights["wih"])
         self.who = np.array(initialweights["who"])
+        self.wih.astype('<U11')
+        print(np.dtype(self.wih))
 
-        self.lr = learningrate
+        self.lr = lr
         self.activation_function = lambda x: scipy.special.expit(x)
 
     def train(self, inputs_list, targets_list):
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
 
+        print(self.wih, inputs)
         hinput = np.dot(self.wih, inputs)
         houtput = self.activation_function(hinput)
 
@@ -35,7 +38,7 @@ class NeuralNetwork:
 
     def train_multiple_epochs(self, input, target, epochs):
         for e in range(epochs):
-            self.train(input, target)
+            self.train(input[e], target[e])
 
         with open("weights.json", 'w') as file:
             weights = {"wih" : self.wih, "who" : self.who}
@@ -53,9 +56,9 @@ class NeuralNetwork:
         return ooutput
 
 def create_NN():
-    inputNodes = 28*28
-    hiddenNodes = 100
-    outputNodes = 10
+    inputNodes = 3
+    hiddenNodes = 3
+    outputNodes = 3
 
     try:
         with open("weights.json", 'x') as file:
@@ -70,21 +73,20 @@ def create_NN():
         data_file = open("material/mnist_train_100.csv", 'r')
         data_list = data_file.readlines()
         data_file.close()
-
+        neuralNetwork.train_multiple_epochs(np.array([[1, 2, 3]]), np.array([[4, 5, 6]]), 1)
+        """
         input = []
         target = []
-        t = []
 
         for number in data_list:
             all_values = number.split(',')
             input += [(np.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01]
             targets = np.zeros(10) + 0.01
             targets[int(all_values[0])] = 0.99
-            t += [all_values[0]]
             target += [targets]
 
         neuralNetwork.train_multiple_epochs(input, target, 100)
-
+        """
     except FileExistsError:
         #neuralNetwork.train();
         print (5)
