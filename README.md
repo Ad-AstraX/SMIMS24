@@ -14,3 +14,9 @@
   <li><i>git stash pop</i> - your stashed changes are added to and visible in your codebase again</li>
   <li><i>git stash drop</i> - your stashed changes are deleted (think before doing this, cannot be reversed)</li>
 </ul>
+
+### Setup your user name and email
+<ul>
+  <li><i>git config user.email "yourmail@email.com</i> - set your mail</li>
+  <li><i>git config user.name "your_username"</i> - set your name</li>
+</ul>
