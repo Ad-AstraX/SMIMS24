@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import ast
+
 import numpy
 import scipy.special
 import numpy as np
@@ -58,9 +60,19 @@ class NeuralNetwork:
         return ooutput
 
 def create_NN():
-    inputNodes = 3
-    hiddenNodes = 3
-    outputNodes = 3
+    inputNodes = 784
+    hiddenNodes = 100
+    outputNodes = 10
+
+    try:
+        with open('weights.json', 'r') as file:
+            data = json.load(file)
+
+        weight = ast.literal_eval(json.dumps(data, indent=4))
+
+        neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 2, weight)
+    except FileNotFoundError:
+        pass
 
     try:
         with open("weights.json", 'x') as file:
@@ -75,7 +87,6 @@ def create_NN():
         data_file = open("material/mnist_train_100.csv", 'r')
         data_list = data_file.readlines()
         data_file.close()
-        #neuralNetwork.train_multiple_epochs(np.array([[1, 2, 3]]), np.array([[4, 5, 6]]), 1)
         input = []
         target = []
 
@@ -89,8 +100,20 @@ def create_NN():
         neuralNetwork.train_multiple_epochs(input, target, 100)
 
     except FileExistsError:
-        #neuralNetwork.train();
-        print (5)
+        test_file = open("material/mnist_test_10.csv", 'r')
+        test_list = test_file.readlines()
+        test_file.close()
+        input = []
+        t = []
+
+        for number in test_list:
+            all_values = number.split(',')
+            input += [(np.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01]
+            t += [all_values[0]]
+
+        for i in range(0, len(input)):
+            print("Neural Network prediction", input[i].tolist().index(np.array(neuralNetwork.query(input[i]).max()))+1, "target:", t[i])
+
 
 
 create_NN()
