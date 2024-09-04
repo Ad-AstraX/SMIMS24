@@ -12,7 +12,7 @@
 <ul>
   <li><i>git stash</i> - your uncommited changes are saved "somewhere else" but you won't see them until you use git stash pop</li>
   <li><i>git stash pop</i> - your stashed changes are added to and visible in your codebase again</li>
-  <li><i>git stash drop</i> - your stashed changes are deleted (think before doing this, cannot be reversed)</li>
+  <li><i>https://code-with-me.global.jetbrains.com/VV5_-rzgMIY3H7496VjYOA#p=PC&fp=38F20A0C7BC2B5F8261A90F66FF50597698EC0F9A0156DCB9807818BE71E1D63&newUi=truegit stash drop</i> - your stashed changes are deleted (think before doing this, cannot be reversed)</li>
 </ul>
 
 ### Setup your user name and email

@@ -13,8 +13,10 @@ class NeuralNetwork:
 
         self.wih = np.array(initialweights["wih"])
         self.who = np.array(initialweights["who"])
-        self.wih.astype('<U11')
-        print(np.dtype(self.wih))
+        #self.wih.split(" ")
+        #self.wih.astype(int)
+
+        #print(np.dtype(self.wih))
 
         self.lr = lr
         self.activation_function = lambda x: scipy.special.expit(x)
@@ -23,7 +25,6 @@ class NeuralNetwork:
         inputs = np.array(inputs_list, ndmin=2).T
         targets = np.array(targets_list, ndmin=2).T
 
-        print(self.wih, inputs)
         hinput = np.dot(self.wih, inputs)
         houtput = self.activation_function(hinput)
 
@@ -41,8 +42,9 @@ class NeuralNetwork:
             self.train(input[e], target[e])
 
         with open("weights.json", 'w') as file:
-            weights = {"wih" : self.wih, "who" : self.who}
-            json.dump(weights, file)
+            weights = {"wih" : self.wih.tolist(), "who" : self.who.tolist()}
+            json.dump(weights, file, indent=6)
+
 
     def query(self, inputs_list):
         inputs = np.array(inputs_list, ndmin=2).T
@@ -65,7 +67,7 @@ def create_NN():
             wih = np.random.normal(0.0, pow(inputNodes, -0.5), (hiddenNodes, inputNodes))
             who = np.random.normal(0.0, pow(hiddenNodes, -0.5), (outputNodes, hiddenNodes))
 
-            weights = {"wih" : np.array2string(wih, separator=","), "who" : np.array2string(who, separator=",")}
+            weights = {"wih" : wih.tolist(), "who" : who.tolist()}
             json.dump(weights, file, indent=6)
 
         neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 2, weights)
@@ -73,8 +75,7 @@ def create_NN():
         data_file = open("material/mnist_train_100.csv", 'r')
         data_list = data_file.readlines()
         data_file.close()
-        neuralNetwork.train_multiple_epochs(np.array([[1, 2, 3]]), np.array([[4, 5, 6]]), 1)
-        """
+        #neuralNetwork.train_multiple_epochs(np.array([[1, 2, 3]]), np.array([[4, 5, 6]]), 1)
         input = []
         target = []
 
@@ -86,7 +87,7 @@ def create_NN():
             target += [targets]
 
         neuralNetwork.train_multiple_epochs(input, target, 100)
-        """
+
     except FileExistsError:
         #neuralNetwork.train();
         print (5)
