@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <style>
+        .highlight {
+            color: white; }
+    </style>
+
+
+</head>
+<body>
+ <div class="container">
+
+<div style = "background-color:rgb(115, 209, 118); width: 100%; font-family: Arial">
+   <h1>plant<b><span class="highlight">Ai</span></b><span>tion </span></h1>
+     <img src="static/Logo.jpeg" alt="Logo">
+
+     <style>
+        body{
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                width: 100%;
+                min-width: 1200px;
+                left: 0px;
+                right: 0px;
+                align-items: center;}
+             }
+    </style>
+
+
+</div>
+<div>
+    <h3>
+        PFLANZENAMPEL
+    </h3>
+
+</div>
+    <img src="static/Blatt_braun.jpeg" alt="Blatt braun und traurig">
+
+    <div>
+    
+    <h2>
+       Ihre Pflanze ist krank...
+    </h2>
+
+        <button onclick="window.location.href='{{ url_for('run_script') }}'">Navigiere zur Zielseite</button>
+
+
+
+    </div>
+  </div>
+</body>
+
+</html>
