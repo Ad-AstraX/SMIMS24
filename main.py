@@ -89,7 +89,7 @@ def create_NN():
 
         neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 0.005, weights)
 
-        data_file = open("material/mnist_train_100.csv", 'r')
+        data_file = open("material/mnist_train.csv", 'r')
         data_list = data_file.readlines()
         data_file.close()
         input = []
@@ -104,7 +104,7 @@ def create_NN():
 
         neuralNetwork.train_multiple_epochs(input, target, 100)
     except FileExistsError:
-        test_file = open("material/mnist_test_10.csv", 'r')
+        test_file = open("material/mnist_test.csv", 'r')
         test_list = test_file.readlines()
         test_file.close()
         input = []
