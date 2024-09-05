@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import ast
 
-import numpy
 import scipy.special
 import numpy as np
 import json
-
+import sys
 
 class NeuralNetwork:
     def __init__(self, inodes, hnodes, onodes, lr, initialweights):
@@ -36,12 +35,18 @@ class NeuralNetwork:
         self.wih += self.lr * np.dot(eih * houtput * (1 - houtput), inputs.T)
 
     def train_multiple_epochs(self, input, target, epochs):
+        progress = 0
         for e in range(epochs):
             for i in range (len(input)):
                 self.train(input[i], target[i])
-                if (e == 0 or e == 99):
-                    output = self.query(input[i]).T[0].tolist()
-                    print("Neural Network prediction", output.index(max(output)), "target:", target[i])
+
+                progress += 1
+                sys.stdout.write ("\rProgressbar: " + str(int(progress/(epochs*len(input))*100)) + "%   ")
+                for i in range(int(progress/(epochs*len(input))*100)):
+                    sys.stdout.write ("=")
+
+                sys.stdout.flush()
+
 
         with open("weights.json", 'w') as file:
             weights = {"wih" : self.wih.tolist(), "who" : self.who.tolist()}
@@ -70,7 +75,7 @@ def create_NN():
 
         weight = ast.literal_eval(json.dumps(data, indent=4))
 
-        neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 2, weight)
+        neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 0.005, weight)
     except FileNotFoundError:
         pass
 
@@ -82,7 +87,7 @@ def create_NN():
             weights = {"wih" : wih.tolist(), "who" : who.tolist()}
             json.dump(weights, file, indent=6)
 
-        neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 2, weights)
+        neuralNetwork = NeuralNetwork(inputNodes, hiddenNodes, outputNodes, 0.005, weights)
 
         data_file = open("material/mnist_train_100.csv", 'r')
         data_list = data_file.readlines()
@@ -119,8 +124,6 @@ def create_NN():
             if (output.index(max(output)) == target_out.index(max(target_out))):
                 rate += 1
             print("Neural Network prediction", output.index(max(output)), "target:", target_out.index(max(target_out)))
-        print(rate/len(input))
-
-
+        print("success rate: ", rate/len(input))
 
 create_NN()
