@@ -37,7 +37,11 @@ class NeuralNetwork:
 
     def train_multiple_epochs(self, input, target, epochs):
         for e in range(epochs):
-            self.train(input[e], target[e])
+            for i in range (len(input)):
+                self.train(input[i], target[i])
+                if (e == 0 or e == 99):
+                    output = self.query(input[i]).T[0].tolist()
+                    print("Neural Network prediction", output.index(max(output)), "target:", target[i])
 
         with open("weights.json", 'w') as file:
             weights = {"wih" : self.wih.tolist(), "who" : self.who.tolist()}
@@ -93,22 +97,29 @@ def create_NN():
             targets[int(all_values[0])] = 0.99
             target += [targets]
 
-        neuralNetwork.train_multiple_epochs(input, target, 200)
+        neuralNetwork.train_multiple_epochs(input, target, 100)
     except FileExistsError:
         test_file = open("material/mnist_test_10.csv", 'r')
         test_list = test_file.readlines()
         test_file.close()
         input = []
-        t = []
+        target = []
 
         for number in test_list:
             all_values = number.split(',')
             input += [(np.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01]
-            t += [all_values[0]]
+            targets = np.zeros(10) + 0.01
+            targets[int(all_values[0])] = 0.99
+            target += [targets]
 
+        rate = 0
         for i in range(0, len(input)):
             output = neuralNetwork.query(input[i]).T[0].tolist()
-            print("Neural Network prediction", output.index(max(output))+1, "target:", t[i])
+            target_out = target[i].T.tolist()
+            if (output.index(max(output)) == target_out.index(max(target_out))):
+                rate += 1
+            print("Neural Network prediction", output.index(max(output)), "target:", target_out.index(max(target_out)))
+        print(rate/len(input))
 
 
 
