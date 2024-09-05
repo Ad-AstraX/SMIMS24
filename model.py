@@ -4,6 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import os
 
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 class Linear_QNet(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):

@@ -72,9 +72,6 @@ class SnakeGameAI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
-
-
         # 2. move
         self._move(action)  # update the head
         self.snake.insert(0, self.head)
@@ -133,9 +130,9 @@ class SnakeGameAI:
         clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
         idx = clock_wise.index(self.direction)
 
-        if np.array_equal((action, [1, 0, 0])):
+        if action== 0:
             new_dir = clock_wise[idx] # no change
-        elif np.array_equal(action, [0, 1, 0]):
+        elif action== 1:
             next_idx = (idx + 1) % 4
             new_dir = clock_wise[next_idx] # right turn r -> d -> l -> u
         else: # [0, 0, 1]

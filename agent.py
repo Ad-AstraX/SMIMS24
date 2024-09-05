@@ -1,7 +1,11 @@
+from typing import final
+
 import torch
 import random
 import numpy as np
 from collections import deque
+
+from NeuralNetwork import NeuralNetwork
 from game import SnakeGameAI, Direction, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
@@ -17,9 +21,10 @@ class Agent:
         self.n_games = 0
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate
-        self.memory = deque(maxlen=MAX_MEMORY)  # popleft()
+        self.memory = []  # popleft()
         self.model = Linear_QNet(11, 256, 3)
-        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        #self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.nn=NeuralNetwork(11,6,3,LR)
 
     def get_state(self, game):
         head = game.snake[0]
@@ -68,10 +73,24 @@ class Agent:
         return np.array(state, dtype=int)
 
     def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))  # popleft if MAX_MEMORY is reached
+        self.memory+=[[state, action, reward, next_state, done]]  # popleft if MAX_MEMORY is reached
 
     def train_long_memory(self):
-        if len(self.memory) > BATCH_SIZE:
+        print(len(self.memory))
+        for i in range(len(self.memory)-1,-1,-1):
+            #if self.memory[i][4]:#game over
+                reward=self.memory[i][2]
+                self.nn.train(self.memory[i][0],reward,None)
+
+                for j in range(i-1,-1,-1):
+                    #print("a",self.memory[j][1])
+                    self.nn.train(self.memory[j][0],reward,np.argmax(self.memory[j][1]))
+                continue
+            #else:
+                #break
+
+
+        """if len(self.memory) > BATCH_SIZE:
             mini_sample = random.sample(self.memory, BATCH_SIZE)  # list of tuples
         else:
             mini_sample = self.memory
@@ -79,25 +98,37 @@ class Agent:
         states, actions, rewards, next_states, dones = zip(*mini_sample)
         self.trainer.train_step(states, actions, rewards, next_states, dones)
         # for state, action, reward, nexrt_state, done in mini_sample:
-        #    self.trainer.train_step(state, action, reward, next_state, done)
+        #    self.trainer.train_step(state, action, reward, next_state, done)"""
 
     def train_short_memory(self, state, action, reward, next_state, done):
-        self.trainer.train_step(state, action, reward, next_state, done)
+        #self.trainer.train_step(state, action, reward, next_state, done)
+        a=0
 
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
+        #print("state",state)
         self.epsilon = 80 - self.n_games
         final_move = [0, 0, 0]
-        if random.randint(0, 200) < self.epsilon:
-            move = random.randint(0, 2)
-            final_move[move] = 1
-        else:
-            state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model(state0)
-            move = torch.argmax(prediction).item()
-            final_move[move] = 1
 
-        return final_move
+        k=random.randint(0, 200)
+
+        if k < self.epsilon:
+            move=np.zeros(3,dtype = float)
+            r=random.randint(0, 2)
+            move[r] =0.99
+            #print("random",r)
+            #final_move[move] = 1
+        else:
+            #Hier
+            out=self.nn.query(np.array(state))
+            #state0 = torch.tensor(state, dtype=torch.float)
+            #prediction = self.model(state0)
+            #move = torch.argmax(prediction).item()
+            move=np.argmax(out).item()
+            final_move[move] = 1
+            move=out
+
+        return move
 
 
 def train():
@@ -113,13 +144,16 @@ def train():
 
         # get move
         final_move = agent.get_action(state_old)
+        #print("move",final_move,np.argmax(final_move))
 
         # perform move and get new state
-        reward, done, score = game.play_step(final_move)
+        reward, done, score = game.play_step(np.argmax(final_move))
+        #print(reward,done,score)
         state_new = agent.get_state(game)
+        #print("stateN",state_new)
 
         # train short memory
-        agent.train_short_memory(state_old, final_move, reward, state_new, done)
+        #agent.train_short_memory(state_old, final_move, reward, state_new, done)
 
         # remember
         agent.remember(state_old, final_move, reward, state_new, done)
@@ -134,7 +168,7 @@ def train():
                 record = score
                 agent.model.save()
 
-            print('Game', agent.n_games, 'Score', score, 'Record:', record)
+            #print('Game', agent.n_games, 'Score', score, 'Record:', record)
 
             plot_scores.append(score)
             total_score += score
