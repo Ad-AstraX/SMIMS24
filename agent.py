@@ -12,7 +12,7 @@ from helper import plot
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.001
+LR = 0.05
 
 
 class Agent:
@@ -81,11 +81,15 @@ class Agent:
             #if self.memory[i][4]:#game over
                 reward=self.memory[i][2]
                 self.nn.train(self.memory[i][0],reward,None)
-
                 for j in range(i-1,-1,-1):
+                    print(j)
+                    if reward!=0:
+                        self.nn.train(self.memory[j][0], reward, np.argmax(self.memory[j][1]))
+
+        '''for j in range(i-1,-1,-1):
                     #print("a",self.memory[j][1])
                     self.nn.train(self.memory[j][0],reward,np.argmax(self.memory[j][1]))
-                continue
+                continue'''
             #else:
                 #break
 
@@ -100,21 +104,27 @@ class Agent:
         # for state, action, reward, nexrt_state, done in mini_sample:
         #    self.trainer.train_step(state, action, reward, next_state, done)"""
 
-    def train_short_memory(self, state, action, reward, next_state, done):
-        #self.trainer.train_step(state, action, reward, next_state, done)
-        a=0
+    def train_short_memory(self, state, reward, state_new):
+        try:
+            self.nn.train_short(state,reward,state_new)
+            a=0
+        finally:
+            a=0
+
 
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
         #print("state",state)
-        self.epsilon = 80 - self.n_games
+        self.epsilon = 40 - self.n_games
         final_move = [0, 0, 0]
 
         k=random.randint(0, 200)
 
         if k < self.epsilon:
             move=np.zeros(3,dtype = float)
-            r=random.randint(0, 2)
+            r=random.randint(0, 3)
+            if r==3:
+                r=0
             move[r] =0.99
             #print("random",r)
             #final_move[move] = 1
@@ -153,7 +163,7 @@ def train():
         #print("stateN",state_new)
 
         # train short memory
-        #agent.train_short_memory(state_old, final_move, reward, state_new, done)
+        agent.train_short_memory(state_old, reward,state_new)
 
         # remember
         agent.remember(state_old, final_move, reward, state_new, done)

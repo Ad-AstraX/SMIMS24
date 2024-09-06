@@ -39,8 +39,31 @@ class NeuralNetwork:
             eho*=np.argmax(action)
         eih = np.dot(self.who.T, eho)
 
-        self.who += self.lr * np.dot(eho * ooutput * (1 - ooutput), houtput.T)
-        self.wih += self.lr * np.dot(eih * houtput * (1 - houtput), inputs.T)
+        self.who += np.dot(self.lr * eho * ooutput * (1 - ooutput), houtput.T)
+        self.wih += np.dot(self.lr * eih * houtput * (1 - houtput), inputs.T)
+    def train_short(self, inputs_list, reward,state_new):
+        #inputs = np.array(inputs_list, ndmin=2).T
+
+        hinput = np.dot(self.wih, inputs_list)
+        houtput = self.activation_function(hinput)
+
+        oinput = np.dot(self.who, houtput)
+        ooutput = self.activation_function(oinput)
+        #inputs1 = np.array(state_new, ndmin=2).T
+
+        hinput1 = np.dot(self.wih, state_new)
+        houtput1 = self.activation_function(hinput1)
+
+        oinput1 = np.dot(self.who, houtput1)
+        ooutput1 = self.activation_function(oinput1)
+
+        eho = (oinput1-oinput)*reward
+        print(eho)
+        eih = np.dot(self.who.T, eho)
+        print(houtput1)
+
+        self.who += self.lr * np.dot(eho * ooutput1 * (1 - ooutput1), ooutput1.T)
+        self.wih += self.lr * np.dot(eih * houtput1 * (1 - houtput1), houtput1.T)
 
     def train_multiple_epochs(self, input, target, epochs):
         progress = 0
